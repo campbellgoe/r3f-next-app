@@ -27,14 +27,14 @@ const gridSnap = 0.1
 const defaultWall = {
   height: 10,
   thickness: gridSnap,
-  size: 20,
+  size: 15,
 }
 const useDatGui = (controls) => {
   const [updates, setUpdates] = useState(0)
   const loaded = useRef(false)
   const settings = useRef({
     mode: 'scale',
-    wallSize: defaultWall.size,
+    roomSize: defaultWall.size,
   })
   useEffect(() => {
     if (typeof window != 'undefined' && !loaded.current) {
@@ -56,11 +56,11 @@ export default function Page() {
   const { selected, setState } = useContext(MyContext);
   const [updates, settings] = useDatGui([["mode", { type: "select", options: ["scale", "rotate", "translate"] }],
   [
-    "wallSize", { type: "range", options: 1 }
+    "roomSize", { type: "range", options: 1 }
   ]])
   const wall = {
     ...defaultWall,
-    size: settings.current.wallSize,
+    size: settings.current.roomSize,
   }
   return (
     <>
