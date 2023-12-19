@@ -36,8 +36,8 @@ export default function Page() {
         {/* jumbo */}
         <div className='flex w-full flex-col items-start justify-center p-12 text-center md:w-2/5 md:text-left'>
           <p className='w-full uppercase'>Next + React Three Fiber</p>
-          <h1 className='my-4 text-5xl font-bold leading-tight'>Three Dimensionality in the Warehouse</h1>
-          <p className='mb-8 text-2xl leading-normal'>How can we keep track of stock in a warehouse and visualise items in 3D?</p>
+          <h1 className='my-4 text-5xl font-bold leading-tight'>Three Dimensionality</h1>
+          <p className='mb-8 text-2xl leading-normal'>Exploring 3D with Three.js</p>
         </div>
 
         <div className='w-full text-center md:w-3/5'>
