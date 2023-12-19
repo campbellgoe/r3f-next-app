@@ -23,6 +23,7 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
   ),
 })
 const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })
+const gridSnap = 0.1
 const useDatGui = (controls) => {
   const [updates, setUpdates] = useState(0)
   const loaded = useRef(false)
@@ -45,6 +46,7 @@ const useDatGui = (controls) => {
   return [updates, settings]
 }
 export default function Page() {
+
   const { selected, setState } = useContext(MyContext);
   const [updates, settings] = useDatGui([["mode", { type: "select", options: ["scale", "rotate", "translate"] }]])
   return (
@@ -71,9 +73,9 @@ export default function Page() {
         <div className='relative my-12 w-full h-full py-6 sm:w-full md:mb-40'>
           <View orbit={{ makeDefault: true }} className='relative h-full  sm:h-[90vh] sm:w-full'>
             <Suspense fallback={null}>
-              <Wall scale={[1, 1, 0.1]} position={[0, 0, 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+              <Wall scale={[gridSnap * 22, gridSnap * 10, gridSnap]} position={[0, 0, 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
               {selected && (
-                <TransformControls object={selected} mode={settings.current.mode} />
+                <TransformControls object={selected} mode={settings.current.mode} translationSnap={gridSnap} scaleSnap={gridSnap} />
               )}
               <Common color={'#66ffdd'} />
             </Suspense>
