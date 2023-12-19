@@ -38,7 +38,6 @@ const useDatGui = (controls) => {
   })
   useEffect(() => {
     if (typeof window != 'undefined' && !loaded.current) {
-
       const gui = new GUI()
       controls.forEach(([setting, { type, options }]) => {
         gui.add(settings.current, setting, options).onChange(() => {
@@ -48,11 +47,11 @@ const useDatGui = (controls) => {
       })
       loaded.current = (true)
       return () => {
-        loaded.current = false
         gui.destroy()
+        loaded.current = false
       }
     }
-  }, [controls, loaded])
+  }, [])
   return [updates, settings]
 }
 export default function Page() {
