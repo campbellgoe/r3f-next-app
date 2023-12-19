@@ -97,7 +97,7 @@ export default function Page() {
               {/* floor */}
               <Wall scale={[wall.thickness * wall.size, wall.thickness, wall.thickness * wall.size]} position={[0, -wall.thickness * (wall.height * 0.5 + 0.5), 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
               {selected && (
-                <TransformControls object={selected} mode={settings.current.mode} translationSnap={gridSnap} scaleSnap={gridSnap} />
+                <TransformControls object={selected} mode={settings.current.mode} translationSnap={gridSnap / 2} scaleSnap={gridSnap / 2} />
               )}
               <Common color={'#66ffdd'} />
             </Suspense>
