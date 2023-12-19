@@ -24,11 +24,17 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 })
 const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })
 const gridSnap = 0.1
+const defaultWall = {
+  height: 10,
+  thickness: gridSnap,
+  size: 20,
+}
 const useDatGui = (controls) => {
   const [updates, setUpdates] = useState(0)
   const loaded = useRef(false)
   const settings = useRef({
-    mode: 'scale'
+    mode: 'scale',
+    wallSize: defaultWall.size,
   })
   useEffect(() => {
     if (typeof window != 'undefined' && !loaded.current) {
@@ -48,7 +54,14 @@ const useDatGui = (controls) => {
 export default function Page() {
 
   const { selected, setState } = useContext(MyContext);
-  const [updates, settings] = useDatGui([["mode", { type: "select", options: ["scale", "rotate", "translate"] }]])
+  const [updates, settings] = useDatGui([["mode", { type: "select", options: ["scale", "rotate", "translate"] }],
+  [
+    "wallSize", { type: "range", options: 1 }
+  ]])
+  const wall = {
+    ...defaultWall,
+    size: settings.current.wallSize,
+  }
   return (
     <>
       <div className='mx-auto flex w-full flex-col flex-wrap items-center md:flex-row  lg:w-4/5'>
@@ -73,8 +86,16 @@ export default function Page() {
         <div className='relative my-12 w-full h-full py-6 sm:w-full md:mb-40'>
           <View orbit={{ makeDefault: true }} className='relative h-full  sm:h-[90vh] sm:w-full'>
             <Suspense fallback={null}>
-              <Wall scale={[gridSnap * 22, gridSnap * 10, gridSnap]} position={[0, 0, 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
-              <Wall scale={[gridSnap * 22, gridSnap, gridSnap * 22]} position={[0, - gridSnap * 5.5, 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+              {/* back and front */}
+              <Wall scale={[wall.thickness * wall.size, wall.thickness * wall.height, wall.thickness]} position={[0, 0, -wall.thickness * (wall.size / 2 + .5)]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+              <Wall scale={[wall.thickness * wall.size, wall.thickness * wall.height, wall.thickness]} position={[0, 0, wall.thickness * (wall.size / 2 + .5)]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+
+              {/* left and right */}
+              <Wall scale={[wall.thickness, wall.thickness * wall.height, wall.thickness * wall.size]} position={[wall.thickness * (wall.size / 2 + .5), 0, 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+
+              <Wall scale={[wall.thickness, wall.thickness * wall.height, wall.thickness * wall.size]} position={[-wall.thickness * (wall.size / 2 + .5), 0, 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+              {/* floor */}
+              <Wall scale={[wall.thickness * wall.size, wall.thickness, wall.thickness * wall.size]} position={[0, -wall.thickness * (wall.height * 0.5 + 0.5), 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
               {selected && (
                 <TransformControls object={selected} mode={settings.current.mode} translationSnap={gridSnap} scaleSnap={gridSnap} />
               )}
