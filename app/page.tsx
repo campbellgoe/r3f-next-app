@@ -38,15 +38,19 @@ const useDatGui = (controls) => {
   })
   useEffect(() => {
     if (typeof window != 'undefined' && !loaded.current) {
+
       const gui = new GUI()
-      const settingsFolder = gui.addFolder('settings')
       controls.forEach(([setting, { type, options }]) => {
-        settingsFolder.add(settings.current, setting, options).onChange(() => {
+        gui.add(settings.current, setting, options).onChange(() => {
           console.log('changed', setting)
           setUpdates(upd => (upd + 1) % 2)
         })
       })
       loaded.current = (true)
+      return () => {
+        loaded.current = false
+        gui.destroy()
+      }
     }
   }, [controls, loaded])
   return [updates, settings]
