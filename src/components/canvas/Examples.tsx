@@ -150,7 +150,10 @@ export function Wall({ position, scale, rotation, color, onSelect }) {
       rotation={rotation}
       ref={meshRef}
       // Event example
-      onClick={(e) => onSelect(meshRef.current)}
+      onClick={(e) => {
+        e.stopPropagation()
+        onSelect(meshRef.current)
+      }}
     >
       <boxGeometry args={scale} />
       <shaderMaterial

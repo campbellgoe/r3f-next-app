@@ -74,6 +74,7 @@ export default function Page() {
           <View orbit={{ makeDefault: true }} className='relative h-full  sm:h-[90vh] sm:w-full'>
             <Suspense fallback={null}>
               <Wall scale={[gridSnap * 22, gridSnap * 10, gridSnap]} position={[0, 0, 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+              <Wall scale={[gridSnap * 22, gridSnap, gridSnap * 22]} position={[0, - gridSnap * 5.5, 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
               {selected && (
                 <TransformControls object={selected} mode={settings.current.mode} translationSnap={gridSnap} scaleSnap={gridSnap} />
               )}
