@@ -78,7 +78,13 @@ export function Wall({ position, scale, rotation, color, onSelect }) {
     },
     u_time: {
       value: 0.0,
-    }
+    },
+    Ka: { value: new THREE.Vector3(1, 1, 1) },
+    Kd: { value: new THREE.Vector3(1, 1, 1) },
+    Ks: { value: new THREE.Vector3(1, 1, 1) },
+    LightIntensity: { value: new THREE.Vector4(0.5, 0.5, 0.5, 1.0) },
+    LightPosition: { value: new THREE.Vector4(0.0, 2000.0, 0.0, 1.0) },
+    Shininess: { value: 200.0 }
   }), [])
   // This reference will give us direct access to the mesh
   const meshRef = useRef<THREE.Mesh>();
@@ -97,38 +103,45 @@ export function Wall({ position, scale, rotation, color, onSelect }) {
   // });
 
   const vertexShader = `
-uniform float u_time;
+  varying vec3 Normal;
+  varying vec3 Position;
 
-varying vec2 vUv;
-
-void main() {
-  vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-  modelPosition.y += sin(modelPosition.x * 4.0 + u_time * 2.0) * 0.2;
-  
-  // Uncomment the code and hit the refresh button below for a more complex effect 🪄
-  // modelPosition.y += sin(modelPosition.z * 6.0 + u_time * 2.0) * 0.1;
-
-  vec4 viewPosition = viewMatrix * modelPosition;
-  vec4 projectedPosition = projectionMatrix * viewPosition;
-
-  gl_Position = projectedPosition;
-}
+  void main() {
+    Normal = normalize(normalMatrix * normal);
+    Position = vec3(modelViewMatrix * vec4(position, 1.0));
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
 
 `
 
   const fragmentShader = `
-varying vec2 vUv;
 
-vec3 colorA = vec3(0.912,0.191,0.652);
-vec3 colorB = vec3(1.000,0.777,0.052);
+  varying vec3 Normal;
+  varying vec3 Position;
 
-void main() {
-  // "Normalizing" with an arbitrary value
-  // We'll see a cleaner technique later :)
-  vec2 normalizedPixel = gl_FragCoord.xy/600.0;
-  vec3 color = mix(colorA, colorB, normalizedPixel.x);
+  uniform vec3 Ka;
+  uniform vec3 Kd;
+  uniform vec3 Ks;
+  uniform vec4 LightPosition;
+  uniform vec3 LightIntensity;
+  uniform float Shininess;
 
-  gl_FragColor = vec4(color,1.0);
+  vec3 phong() {
+    vec3 n = normalize(Normal);
+    vec3 s = normalize(vec3(LightPosition) - Position);
+    vec3 v = normalize(vec3(-Position));
+    vec3 r = reflect(-s, n);
+
+    vec3 ambient = Ka;
+    vec3 diffuse = Kd * max(dot(s, n), 0.0);
+    vec3 specular = Ks * pow(max(dot(r, v), 0.0), Shininess);
+
+    return LightIntensity * (ambient + diffuse + specular);
+  }
+
+  void main() {
+    vec3 col = vec3(1.0, 1.0, 0.6);
+    gl_FragColor = vec4(col*phong(), 1.0);
 }
 `
   return (
@@ -144,7 +157,7 @@ void main() {
         fragmentShader={fragmentShader}
         vertexShader={vertexShader}
         uniforms={uniforms}
-        wireframe />
+      />
     </mesh>
   );
 }
