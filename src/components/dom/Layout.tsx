@@ -1,12 +1,14 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useContext } from 'react'
 import dynamic from 'next/dynamic'
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
+import MyContext from '@/context/Context';
 
 const Layout = ({ children }) => {
   const ref = useRef()
 
+  const { setState } = useContext(MyContext);
   return (
     <div
       ref={ref}
@@ -30,6 +32,9 @@ const Layout = ({ children }) => {
         }}
         eventSource={ref}
         eventPrefix='client'
+        onPointerMissed={() => {
+          setState(state => ({ ...state, selected: null }))
+        }}
       />
     </div>
   )

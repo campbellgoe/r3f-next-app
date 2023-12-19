@@ -1,10 +1,13 @@
 'use client'
-
+import { TransformControls } from '@react-three/drei'
 import dynamic from 'next/dynamic'
-import { Suspense } from 'react'
+import { Suspense, useContext, useState } from 'react'
+// import { Controls, useControl } from "react-three-gui"
+import MyContext from '@/context/Context';
 
 const Logo = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
 const Dog = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Dog), { ssr: false })
+const Wall = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Wall), { ssr: false })
 const Duck = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Duck), { ssr: false })
 const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
   ssr: false,
@@ -24,14 +27,17 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })
 
 export default function Page() {
+  const { selected, setState } = useContext(MyContext);
+  const [orbitEnabled, setOrbitEnabled] = useState(true)
   return (
     <>
+      {/* <Controls /> */}
       <div className='mx-auto flex w-full flex-col flex-wrap items-center md:flex-row  lg:w-4/5'>
         {/* jumbo */}
         <div className='flex w-full flex-col items-start justify-center p-12 text-center md:w-2/5 md:text-left'>
           <p className='w-full uppercase'>Next + React Three Fiber</p>
-          <h1 className='my-4 text-5xl font-bold leading-tight'>Next 3D Starter</h1>
-          <p className='mb-8 text-2xl leading-normal'>A minimalist starter for React, React-three-fiber and Threejs.</p>
+          <h1 className='my-4 text-5xl font-bold leading-tight'>Three Dimensionality in the Warehouse</h1>
+          <p className='mb-8 text-2xl leading-normal'>How can we keep track of stock in a warehouse and visualise items in 3D?</p>
         </div>
 
         <div className='w-full text-center md:w-3/5'>
@@ -39,6 +45,20 @@ export default function Page() {
             <Suspense fallback={null}>
               <Logo route='/blob' scale={0.6} position={[0, 0, 0]} />
               <Common />
+            </Suspense>
+          </View>
+        </div>
+      </div>
+
+      <div className="mx-auto flex w-full p-12 md:flex-row  lg:w-4/5">
+        <div className='relative my-12 w-full h-full py-6 sm:w-full md:mb-40'>
+          <View orbit={{ makeDefault: true }} className='relative h-full  sm:h-[90vh] sm:w-full'>
+            <Suspense fallback={null}>
+              <Wall scale={[1, 1, 1]} position={[0, 0, 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+              {selected && (
+                <TransformControls object={selected} />
+              )}
+              <Common color={'#66ffdd'} />
             </Suspense>
           </View>
         </div>

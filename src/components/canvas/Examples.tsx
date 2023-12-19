@@ -1,5 +1,4 @@
 'use client'
-
 import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
@@ -65,4 +64,35 @@ export function Dog(props) {
   const { scene } = useGLTF('/dog.glb')
 
   return <primitive object={scene} {...props} />
+}
+
+
+// const wallGeometry = new THREE.BoxGeometry(1, 1, 1);
+// const wallMaterial = new THREE.MeshStandardMaterial({
+//   color: 0xffccdd,
+// })
+export function Wall({ position, scale, rotation, color, onSelect }) {
+  // This reference will give us direct access to the mesh
+  const meshRef = useRef();
+
+  // You can optionally add interactivity, like animations
+  // useFrame(() => {
+  //   // Example animation (rotating the wall)
+  //   if (meshRef.current) {
+  //     meshRef.current.rotation.y += 0.01;
+  //   }
+  // });
+
+  return (
+    <mesh
+      position={position}
+      rotation={rotation}
+      ref={meshRef}
+      // Event example
+      onClick={(e) => onSelect(meshRef.current)}
+    >
+      <boxGeometry args={scale} />
+      <meshStandardMaterial color={color} />
+    </mesh>
+  );
 }
