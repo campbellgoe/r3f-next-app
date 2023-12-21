@@ -6,7 +6,6 @@ import MyContext from '@/context/Context';
 import { GUI } from 'dat.gui'
 const Logo = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
 const Block = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Block), { ssr: false })
-const Duck = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Duck), { ssr: false })
 const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
   ssr: false,
   loading: () => (
@@ -37,6 +36,7 @@ const useDatGui = (controls) => {
     mode: 'scale',
     roomSizeX: defaultRoom.sizeX,
     roomSizeZ: defaultRoom.sizeZ,
+    roomHeight: defaultRoom.height,
   })
   useEffect(() => {
     if (typeof window != 'undefined' && !loaded.current) {
@@ -61,6 +61,9 @@ export default function Page() {
   const { selected, setState } = useContext(MyContext);
   const [updates, settings] = useDatGui([["mode", { type: "select", options: ["scale", "rotate", "translate"] }],
   [
+    "roomHeight", { type: "range", options: 1 }
+  ],
+  [
     "roomSizeX", { type: "range", options: 1 }
   ],
   [
@@ -68,6 +71,7 @@ export default function Page() {
   ]])
   const wall = {
     ...defaultRoom,
+    height: settings.current.roomHeight,
     sizeX: settings.current.roomSizeX,
     sizeZ: settings.current.roomSizeZ,
   }
