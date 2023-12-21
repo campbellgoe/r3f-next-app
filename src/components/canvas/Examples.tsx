@@ -61,7 +61,7 @@ export const Logo = ({ route = '/blob', ...props }) => {
 export function Block({ position, scale, rotation, color, onSelect }) {
   const uniforms = useMemo(() => ({
     u_color: {
-      value: color,
+      value: new THREE.Color(color),
     },
     u_time: {
       value: 0.0,
@@ -106,6 +106,7 @@ export function Block({ position, scale, rotation, color, onSelect }) {
   varying vec3 Normal;
   varying vec3 Position;
 
+  uniform vec3 u_color;
   uniform vec3 Ka;
   uniform vec3 Kd;
   uniform vec3 Ks;
@@ -127,7 +128,7 @@ export function Block({ position, scale, rotation, color, onSelect }) {
   }
 
   void main() {
-    vec3 col = vec3(1.0, 1.0, 0.6);
+    vec3 col = u_color;
     gl_FragColor = vec4(col*phong(), 1.0);
 }
 `

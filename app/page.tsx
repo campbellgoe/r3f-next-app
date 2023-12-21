@@ -95,16 +95,14 @@ export default function Page() {
         <div className='relative my-12 w-full h-full py-6 sm:w-full md:mb-40'>
           <View orbit={{ makeDefault: true }} className='relative h-full  sm:h-[90vh] sm:w-full'>
             <Suspense fallback={null}>
-              {/* back and front */}
-              <Block scale={[wall.thickness * wall.sizeX, wall.thickness * wall.height, wall.thickness]} position={[0, 0, -wall.thickness * (wall.sizeZ / 2 + .5)]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
-              <Block scale={[wall.thickness * wall.sizeX, wall.thickness * wall.height, wall.thickness]} position={[0, 0, wall.thickness * (wall.sizeZ / 2 + .5)]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+              {/* 4 walls */}
+              <Block scale={[wall.thickness * wall.sizeX, wall.thickness * wall.height, wall.thickness]} position={[0, 0, -wall.thickness * (wall.sizeZ / 2 + .5)]} rotation={[0.0, 0, 0]} color={0xffffdd} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+              <Block scale={[wall.thickness * wall.sizeX, wall.thickness * wall.height, wall.thickness]} position={[0, 0, wall.thickness * (wall.sizeZ / 2 + .5)]} rotation={[0.0, 0, 0]} color={0xffffdd} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
 
-              {/* left and right */}
-              <Block scale={[wall.thickness, wall.thickness * wall.height, wall.thickness * wall.sizeZ]} position={[wall.thickness * (wall.sizeX / 2 + .5), 0, 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
-
-              <Block scale={[wall.thickness, wall.thickness * wall.height, wall.thickness * wall.sizeZ]} position={[-wall.thickness * (wall.sizeX / 2 + .5), 0, 0]} rotation={[0.0, 0, 0]} color={'#883333'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+              <Block scale={[wall.thickness, wall.thickness * wall.height, wall.thickness * wall.sizeZ]} position={[wall.thickness * (wall.sizeX / 2 + .5), 0, 0]} rotation={[0.0, 0, 0]} color={0xffffdd} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+              <Block scale={[wall.thickness, wall.thickness * wall.height, wall.thickness * wall.sizeZ]} position={[-wall.thickness * (wall.sizeX / 2 + .5), 0, 0]} rotation={[0.0, 0, 0]} color={0xffffdd} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
               {/* floor */}
-              <Block scale={[wall.thickness * wall.sizeX, wall.thickness, wall.thickness * wall.sizeZ]} position={[0, -wall.thickness * (wall.height * 0.5 + 0.5), 0]} rotation={[0.0, 0, 0]} color={'#ddaa99'} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
+              <Block scale={[wall.thickness * wall.sizeX, wall.thickness, wall.thickness * wall.sizeZ]} position={[0, -wall.thickness * (wall.height * 0.5 + 0.5), 0]} rotation={[0.0, 0, 0]} color={0xbbbbff} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
               {selected && (
                 <TransformControls object={selected} mode={settings.current.mode} translationSnap={gridSnap / 2} scaleSnap={gridSnap / 2} />
               )}
