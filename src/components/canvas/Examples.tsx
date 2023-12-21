@@ -53,25 +53,12 @@ export const Logo = ({ route = '/blob', ...props }) => {
   )
 }
 
-export function Duck(props) {
-  const { scene } = useGLTF('/duck.glb')
-
-  useFrame((state, delta) => (scene.rotation.y += delta))
-
-  return <primitive object={scene} {...props} />
-}
-export function Dog(props) {
-  const { scene } = useGLTF('/dog.glb')
-
-  return <primitive object={scene} {...props} />
-}
-
 
 // const wallGeometry = new THREE.BoxGeometry(1, 1, 1);
 // const wallMaterial = new THREE.MeshStandardMaterial({
 //   color: 0xffccdd,
 // })
-export function Wall({ position, scale, rotation, color, onSelect }) {
+export function Block({ position, scale, rotation, color, onSelect }) {
   const uniforms = useMemo(() => ({
     u_color: {
       value: color,
