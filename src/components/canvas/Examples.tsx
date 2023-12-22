@@ -58,7 +58,7 @@ export const Logo = ({ route = '/blob', ...props }) => {
 // const wallMaterial = new THREE.MeshStandardMaterial({
 //   color: 0xffccdd,
 // })
-export function Block({ position, scale, rotation, color, onSelect }) {
+export function Block({ position, scale, rotation, color, onSelect, ...props }) {
   const uniforms = useMemo(() => ({
     u_color: {
       value: new THREE.Color(color),
@@ -142,6 +142,7 @@ export function Block({ position, scale, rotation, color, onSelect }) {
         e.stopPropagation()
         onSelect(meshRef.current)
       }}
+      {...props}
     >
       <boxGeometry args={scale} />
       <shaderMaterial
