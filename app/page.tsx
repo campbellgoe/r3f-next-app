@@ -26,16 +26,16 @@ const gridSnap = 0.1
 const defaultRoom = {
   height: 10,
   thickness: gridSnap,
-  sizeX: 15,
-  sizeZ: 15
+  width: 15,
+  depth: 15
 }
 const useDatGui = (controls) => {
   const [updates, setUpdates] = useState(0)
   const loaded = useRef(false)
   const settings = useRef({
     mode: 'scale',
-    roomSizeX: defaultRoom.sizeX,
-    roomSizeZ: defaultRoom.sizeZ,
+    roomWidth: defaultRoom.width,
+    roomDepth: defaultRoom.depth,
     roomHeight: defaultRoom.height,
   })
   useEffect(() => {
@@ -64,16 +64,21 @@ export default function Page() {
     "roomHeight", { type: "range", options: 1 }
   ],
   [
-    "roomSizeX", { type: "range", options: 1 }
+    "roomWidth", { type: "range", options: 1 }
   ],
   [
-    "roomSizeZ", { type: "range", options: 1 }
+    "roomDepth", { type: "range", options: 1 }
   ]])
   const wall = {
     ...defaultRoom,
     height: settings.current.roomHeight,
-    sizeX: settings.current.roomSizeX,
-    sizeZ: settings.current.roomSizeZ,
+    width: settings.current.roomWidth,
+    depth: settings.current.roomDepth,
+  }
+  const box = {
+    width: 0.25,
+    depth: 0.5,
+    height: 0.2
   }
   const onSelect = mesh => setState(state => ({ ...state, selected: mesh }))
   const y = wall.thickness * (wall.height / 2)
@@ -98,28 +103,28 @@ export default function Page() {
               {/* 4 walls */}
               <Block
                 scale={[
-                  wall.thickness * wall.sizeX,
+                  wall.thickness * wall.width,
                   wall.thickness * wall.height,
                   wall.thickness
                 ]}
                 position={[
                   0,
                   y,
-                  -wall.thickness * (wall.sizeZ / 2 + .5)
+                  -wall.thickness * (wall.depth / 2 + .5)
                 ]}
                 rotation={[0, 0, 0]}
                 color={0xffffdd}
                 onSelect={onSelect} />
               <Block
                 scale={[
-                  wall.thickness * wall.sizeX,
+                  wall.thickness * wall.width,
                   wall.thickness * wall.height,
                   wall.thickness
                 ]}
                 position={[
                   0,
                   y,
-                  wall.thickness * (wall.sizeZ / 2 + .5)
+                  wall.thickness * (wall.depth / 2 + .5)
                 ]}
                 rotation={[0, 0, 0]}
                 color={0xffffdd}
@@ -128,10 +133,10 @@ export default function Page() {
               <Block scale={[
                 wall.thickness,
                 wall.thickness * wall.height,
-                wall.thickness * wall.sizeZ
+                wall.thickness * wall.depth
               ]}
                 position={[
-                  wall.thickness * (wall.sizeX / 2 + .5),
+                  wall.thickness * (wall.width / 2 + .5),
                   y,
                   0
                 ]}
@@ -143,10 +148,10 @@ export default function Page() {
                 scale={[
                   wall.thickness,
                   wall.thickness * wall.height,
-                  wall.thickness * wall.sizeZ
+                  wall.thickness * wall.depth
                 ]}
                 position={[
-                  -wall.thickness * (wall.sizeX / 2 + .5),
+                  -wall.thickness * (wall.width / 2 + .5),
                   y,
                   0
                 ]}
@@ -156,26 +161,31 @@ export default function Page() {
               {/* floor */}
               <Block
                 scale={[
-                  wall.thickness * wall.sizeX,
+                  wall.thickness * wall.width,
                   wall.thickness,
-                  wall.thickness * wall.sizeZ
+                  wall.thickness * wall.depth
                 ]}
                 position={[
                   0,
                   y - wall.thickness * (wall.height * 0.5 + 0.5),
                   0]}
                 rotation={[0.0, 0, 0]} color={0xbbbbff} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
-              <Block
-                scale={[0.25, 0.2, 0.5]}
-                position={[
-                  0,
-                  wall.thickness,
-                  0
-                ]}
-                rotation={[0, 0, 0]}
-                color={0xffffff * Math.random()}
-                onSelect={onSelect}
-              />
+              {Array.from({ length: Math.floor(((wall.width * wall.thickness) / box.width) * (wall.depth * wall.thickness) / box.depth) }).map((item, index) => {
+                const numberOfCols = Math.floor((wall.depth * wall.thickness) / box.depth)
+                const z = (index % numberOfCols + 1) * (box.depth) - wall.depth / 2 * wall.thickness - box.depth / 2
+                const x = (index / numberOfCols + 1) * (box.width) - wall.width / 2 * wall.thickness - box.width / 2
+                return <Block
+                  scale={[box.width, box.height, box.depth]}
+                  position={[
+                    x,
+                    wall.thickness,
+                    z
+                  ]}
+                  rotation={[0, 0, 0]}
+                  color={0xffffff * Math.random()}
+                  onSelect={onSelect}
+                />
+              })}
               {selected && (
                 <TransformControls object={selected} mode={settings.current.mode} translationSnap={gridSnap / 2} scaleSnap={gridSnap / 2} />
               )}
