@@ -92,6 +92,7 @@ export default function Page() {
   }
   const onSelect = mesh => setState(state => ({ ...state, selected: mesh }))
   const y = wall.thickness * (wall.height / 2)
+  const numBoxes = Math.floor(((wall.width * wall.thickness) / box.width) * ((wall.depth * wall.thickness) / box.depth) * ((wall.height * wall.thickness) / box.height))
   return (
     <>
       <div className='mx-auto flex w-full flex-col flex-wrap items-center md:flex-row  lg:w-4/5'>
@@ -108,6 +109,7 @@ export default function Page() {
 
       <div className="mx-auto flex w-full p-12 md:flex-row  lg:w-4/5">
         <div className='relative my-12 w-full h-full py-6 sm:w-full md:mb-40'>
+          <p>Number of boxes: {numBoxes} </p>
           <View orbit={{ makeDefault: true }} className='relative h-full  sm:h-[90vh] sm:w-full'>
             <Suspense fallback={null}>
               {/* 4 walls */}
@@ -180,16 +182,19 @@ export default function Page() {
                   y - wall.thickness * (wall.height * 0.5 + 0.5),
                   0]}
                 rotation={[0.0, 0, 0]} color={0xbbbbff} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
-              {Array.from({ length: Math.floor(((wall.width * wall.thickness) / box.width) * (wall.depth * wall.thickness) / box.depth) }).map((item, index) => {
+              {Array.from({ length: numBoxes }).map((item, index) => {
                 const numberOfCols = Math.floor((wall.depth * wall.thickness) / box.depth);
+                const numberOfRows = Math.floor((wall.width * wall.thickness) / box.width);
+                const numberOfLayers = Math.floor((wall.height * wall.thickness) / box.height);
 
                 const z = (index % numberOfCols) * box.depth - (wall.depth * wall.thickness / 2 - box.depth / 2);
-                const x = Math.floor(index / numberOfCols) * box.width - (wall.width * wall.thickness / 2 - box.width / 2);
+                const x = Math.floor((index / numberOfCols) % numberOfRows) * box.width - (wall.width * wall.thickness / 2 - box.width / 2);
+                const y = Math.floor(index / (numberOfCols * numberOfRows)) * box.height + box.height / 2;
                 return <Block
                   scale={[box.width, box.height, box.depth]}
                   position={[
                     x,
-                    box.height / 2,
+                    y,
                     z
                   ]}
                   rotation={[0, 0, 0]}
