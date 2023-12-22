@@ -37,9 +37,9 @@ const useDatGui = (controls) => {
     roomWidth: defaultRoom.width,
     roomDepth: defaultRoom.depth,
     roomHeight: defaultRoom.height,
-    boxWidth: 1,
-    boxDepth: 1,
-    boxHeight: 1,
+    boxWidth: 0.4,
+    boxDepth: 0.3,
+    boxHeight: 0.2,
   })
   useEffect(() => {
     if (typeof window != 'undefined' && !loaded.current) {
@@ -181,14 +181,15 @@ export default function Page() {
                   0]}
                 rotation={[0.0, 0, 0]} color={0xbbbbff} onSelect={mesh => setState(state => ({ ...state, selected: mesh }))} />
               {Array.from({ length: Math.floor(((wall.width * wall.thickness) / box.width) * (wall.depth * wall.thickness) / box.depth) }).map((item, index) => {
-                const numberOfCols = Math.floor((wall.depth * wall.thickness) / box.depth)
-                const z = (index % numberOfCols + 1) * (box.depth) - wall.depth / 2 * wall.thickness - box.depth / 2
-                const x = (index / numberOfCols + 1) * (box.width) - wall.width / 2 * wall.thickness - box.width / 2
+                const numberOfCols = Math.floor((wall.depth * wall.thickness) / box.depth);
+
+                const z = (index % numberOfCols) * box.depth - (wall.depth * wall.thickness / 2 - box.depth / 2);
+                const x = Math.floor(index / numberOfCols) * box.width - (wall.width * wall.thickness / 2 - box.width / 2);
                 return <Block
                   scale={[box.width, box.height, box.depth]}
                   position={[
                     x,
-                    wall.thickness,
+                    box.height / 2,
                     z
                   ]}
                   rotation={[0, 0, 0]}
