@@ -37,6 +37,9 @@ const useDatGui = (controls) => {
     roomWidth: defaultRoom.width,
     roomDepth: defaultRoom.depth,
     roomHeight: defaultRoom.height,
+    boxWidth: 1,
+    boxDepth: 1,
+    boxHeight: 1,
   })
   useEffect(() => {
     if (typeof window != 'undefined' && !loaded.current) {
@@ -68,6 +71,13 @@ export default function Page() {
   ],
   [
     "roomDepth", { type: "range", options: 1 }
+  ],
+  [
+    "boxDepth", { type: "range", options: 0.1 }
+  ], [
+    "boxWidth", { type: "range", options: 0.1 }
+  ], [
+    "boxHeight", { type: "range", options: 0.1 }
   ]])
   const wall = {
     ...defaultRoom,
@@ -76,9 +86,9 @@ export default function Page() {
     depth: settings.current.roomDepth,
   }
   const box = {
-    width: 0.25,
-    depth: 0.5,
-    height: 0.2
+    width: settings.current.boxWidth,
+    depth: settings.current.boxDepth,
+    height: settings.current.boxHeight
   }
   const onSelect = mesh => setState(state => ({ ...state, selected: mesh }))
   const y = wall.thickness * (wall.height / 2)
