@@ -109,7 +109,7 @@ export default function Page() {
 
       <div className="mx-auto flex w-full p-12 md:flex-row  lg:w-4/5">
         <div className='relative my-12 w-full h-full py-6 sm:w-full md:mb-40'>
-          <p>Number of boxes: {numBoxes} </p>
+          <p>Number of boxes: {numBoxes}</p>
           <View orbit={{ makeDefault: true }} className='relative h-full  sm:h-[90vh] sm:w-full'>
             <Suspense fallback={null}>
               {/* 4 walls */}
