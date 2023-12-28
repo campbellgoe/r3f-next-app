@@ -191,6 +191,7 @@ export default function Page() {
                 const x = Math.floor((index / numberOfCols) % numberOfRows) * box.width - (wall.width * wall.thickness / 2 - box.width / 2);
                 const y = Math.floor(index / (numberOfCols * numberOfRows)) * box.height + box.height / 2;
                 return <Block
+                  key={index}
                   scale={[box.width, box.height, box.depth]}
                   position={[
                     x,
