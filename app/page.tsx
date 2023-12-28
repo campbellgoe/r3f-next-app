@@ -34,8 +34,6 @@ const useDatGui = (controls) => {
   const [updates, setUpdates] = useState(0)
   const loaded = useRef(false)
   const settings = useRef({
-
-
     mode: 'scale',
     roomWidth: defaultRoom.width,
     roomDepth: defaultRoom.depth,
@@ -83,16 +81,12 @@ export default function Page() {
   ], [
     "boxHeight", { type: "range", options: 0.1 }
   ]])
-  const wall = useMemo(() => {
-    if (settings.current) {
-      return ({
-        ...defaultRoom,
-        height: settings.current.roomHeight,
-        width: settings.current.roomWidth,
-        depth: settings.current.roomDepth,
-      })
-    }
-  }, [defaultRoom, settings])
+  const wall = {
+    ...defaultRoom,
+    height: settings.current.roomHeight,
+    width: settings.current.roomWidth,
+    depth: settings.current.roomDepth,
+  }
   const box = {
     width: settings.current.boxWidth,
     depth: settings.current.boxDepth,
