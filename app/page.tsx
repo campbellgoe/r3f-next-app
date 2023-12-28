@@ -4,7 +4,8 @@ import { TransformControls } from '@react-three/drei'
 import dynamic from 'next/dynamic'
 import { Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import MyContext from '@/context/Context';
-import { GUI } from 'dat.gui'
+
+let gui;
 const Logo = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
 const Block = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Block), { ssr: false })
 const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
@@ -45,17 +46,28 @@ const useDatGui = (controls) => {
   })
   useEffect(() => {
     if (typeof window != 'undefined' && !loaded.current) {
-      const gui = new GUI()
-      controls.forEach(([setting, { type, options }]) => {
-        gui.add(settings.current, setting, options).onChange(() => {
-          console.log('changed', setting)
-          setUpdates(upd => (upd + 1) % 2)
+      loaded.current = (true)
+      const init = async () => {
+        if (!gui) {
+          const dat = await import('dat.gui')
+          gui = new dat.GUI()
+          return gui
+        }
+        return gui
+      }
+      init().then(gui => {
+        controls.forEach(([setting, { type, options }]) => {
+          gui.add(settings.current, setting, options).onChange(() => {
+            console.log('changed', setting)
+            setUpdates(upd => (upd + 1) % 2)
+          })
         })
       })
-      loaded.current = (true)
       return () => {
-        gui.destroy()
-        loaded.current = false
+        if (gui) {
+          gui.destroy()
+          loaded.current = false
+        }
       }
     }
   }, [])
