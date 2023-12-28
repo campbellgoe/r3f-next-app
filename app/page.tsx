@@ -1,7 +1,8 @@
+// @ts-nocheck
 'use client'
 import { TransformControls } from '@react-three/drei'
 import dynamic from 'next/dynamic'
-import { Suspense, useContext, useEffect, useRef, useState } from 'react'
+import { Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import MyContext from '@/context/Context';
 import { GUI } from 'dat.gui'
 const Logo = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
@@ -33,6 +34,8 @@ const useDatGui = (controls) => {
   const [updates, setUpdates] = useState(0)
   const loaded = useRef(false)
   const settings = useRef({
+
+
     mode: 'scale',
     roomWidth: defaultRoom.width,
     roomDepth: defaultRoom.depth,
@@ -40,6 +43,7 @@ const useDatGui = (controls) => {
     boxWidth: 0.4,
     boxDepth: 0.3,
     boxHeight: 0.2,
+
   })
   useEffect(() => {
     if (typeof window != 'undefined' && !loaded.current) {
@@ -79,12 +83,16 @@ export default function Page() {
   ], [
     "boxHeight", { type: "range", options: 0.1 }
   ]])
-  const wall = {
-    ...defaultRoom,
-    height: settings.current.roomHeight,
-    width: settings.current.roomWidth,
-    depth: settings.current.roomDepth,
-  }
+  const wall = useMemo(() => {
+    if (settings.current) {
+      return ({
+        ...defaultRoom,
+        height: settings.current.roomHeight,
+        width: settings.current.roomWidth,
+        depth: settings.current.roomDepth,
+      })
+    }
+  }, [defaultRoom, settings])
   const box = {
     width: settings.current.boxWidth,
     depth: settings.current.boxDepth,
@@ -101,7 +109,7 @@ export default function Page() {
           <View className='flex h-96 w-full flex-col items-center justify-center'>
             <Suspense fallback={null}>
               <Logo route='/blob' scale={0.6} position={[0, 0, 0]} />
-              <Common />
+              <Common color='#ffffff' />
             </Suspense>
           </View>
         </div>

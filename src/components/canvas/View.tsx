@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use client'
 
 import { forwardRef, Suspense, useImperativeHandle, useRef } from 'react'
