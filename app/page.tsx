@@ -65,8 +65,14 @@ const useDatGui = (controls) => {
       })
       return () => {
         if (gui) {
-          gui.destroy()
-          loaded.current = false
+          try {
+            gui.destroy()
+            gui = null
+          } catch (err) {
+            console.warn('no gui to destroy')
+          } finally {
+            loaded.current = false
+          }
         }
       }
     }
