@@ -1,64 +1,14 @@
 'use client'
-import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { useMemo, useRef, useState } from 'react'
-import { Line, useCursor, MeshDistortMaterial } from '@react-three/drei'
-import { useRouter } from 'next/navigation'
-
-export const Blob = ({ route = '/', ...props }) => {
-  const router = useRouter()
-  const [hovered, hover] = useState(false)
-  useCursor(hovered)
-  return (
-    <mesh
-      onClick={() => router.push(route)}
-      onPointerOver={() => hover(true)}
-      onPointerOut={() => hover(false)}
-      {...props}>
-      <sphereGeometry args={[1, 64, 64]} />
-      <MeshDistortMaterial roughness={0} color={hovered ? 'hotpink' : '#1fb2f5'} />
-    </mesh>
-  )
-}
-
-export const Logo = ({ route = '/blob', ...props }) => {
-  const mesh = useRef(null)
-  const router = useRouter()
-
-  const [hovered, hover] = useState(false)
-  const points = useMemo(() => new THREE.EllipseCurve(0, 0, 3, 1.15, 0, 2 * Math.PI, false, 0).getPoints(100), [])
-
-  useCursor(hovered)
-  useFrame((state, delta) => {
-    const t = state.clock.getElapsedTime()
-    mesh.current.rotation.y = Math.sin(t) * (Math.PI / 8)
-    mesh.current.rotation.x = Math.cos(t) * (Math.PI / 8)
-    mesh.current.rotation.z -= delta / 4
-  })
-
-  return (
-    <group ref={mesh} {...props}>
-      {/* @ts-ignore */}
-      <Line worldUnits points={points} color='#1fb2f5' lineWidth={0.15} />
-      {/* @ts-ignore */}
-      <Line worldUnits points={points} color='#1fb2f5' lineWidth={0.15} rotation={[0, 0, 1]} />
-      {/* @ts-ignore */}
-      <Line worldUnits points={points} color='#1fb2f5' lineWidth={0.15} rotation={[0, 0, -1]} />
-      <mesh onClick={() => router.push(route)} onPointerOver={() => hover(true)} onPointerOut={() => hover(false)}>
-        <sphereGeometry args={[0.55, 64, 64]} />
-        <meshPhysicalMaterial roughness={0} color={hovered ? 'hotpink' : '#1fb2f5'} />
-      </mesh>
-    </group>
-  )
-}
+import { useEffect, useMemo, useRef } from 'react'
 
 
 // const wallGeometry = new THREE.BoxGeometry(1, 1, 1);
 // const wallMaterial = new THREE.MeshStandardMaterial({
 //   color: 0xffccdd,
 // })
-export function Block({ position, scale, rotation, color, onSelect, ...props }) {
+export function Block({ index, count, position, scale, rotation, color, onSelect, ...props }) {
   const uniforms = useMemo(() => ({
     u_color: {
       value: new THREE.Color(color),
@@ -74,20 +24,13 @@ export function Block({ position, scale, rotation, color, onSelect, ...props }) 
     Shininess: { value: 200.0 }
   }), [])
   // This reference will give us direct access to the mesh
-  const meshRef = useRef<THREE.Mesh>();
+  const meshRef = useRef<THREE.InstancedMesh>();
   useFrame((state) => {
     const { clock } = state;
     if (meshRef?.current) {
       meshRef.current.material.uniforms.u_time.value = clock.getElapsedTime();
     }
   });
-  // You can optionally add interactivity, like animations
-  // useFrame(() => {
-  //   // Example animation (rotating the wall)
-  //   if (meshRef.current) {
-  //     meshRef.current.rotation.y += 0.01;
-  //   }
-  // });
 
   const vertexShader = `
   varying vec3 Normal;
@@ -132,11 +75,21 @@ export function Block({ position, scale, rotation, color, onSelect, ...props }) 
     gl_FragColor = vec4(col*phong(), 1.0);
 }
 `
+  useEffect(() => {
+    if (meshRef.current) {
+      const matrix = new THREE.Matrix4()
+      matrix.setPosition(...position)
+      meshRef.current.setMatrixAt(index, matrix)
+      meshRef.current.instanceMatrix.needsUpdate = true
+      console.log('mesh updated')
+    } else {
+      console.log('no mesh')
+    }
+  }, [position, index])
   return (
-    <mesh
-      position={position}
-      rotation={rotation}
+    <instancedMesh
       ref={meshRef}
+      args={[null, null, count]}
       // Event example
       onClick={(e) => {
         e.stopPropagation()
@@ -150,6 +103,6 @@ export function Block({ position, scale, rotation, color, onSelect, ...props }) 
         vertexShader={vertexShader}
         uniforms={uniforms}
       />
-    </mesh>
+    </instancedMesh>
   );
 }

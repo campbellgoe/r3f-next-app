@@ -2,11 +2,11 @@
 'use client'
 import { TransformControls } from '@react-three/drei'
 import dynamic from 'next/dynamic'
-import { Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useContext, useEffect, useRef, useState } from 'react'
 import MyContext from '@/context/Context';
 
 let gui;
-const Logo = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
+
 const Block = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Block), { ssr: false })
 const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
   ssr: false,
@@ -113,27 +113,21 @@ export default function Page() {
   const onSelect = mesh => setState(state => ({ ...state, selected: mesh }))
   const y = wall.thickness * (wall.height / 2)
   const numBoxes = Math.floor(((wall.width * wall.thickness) / box.width) * ((wall.depth * wall.thickness) / box.depth) * ((wall.height * wall.thickness) / box.height))
+  const numWalls = 4;
+  const numFloor = 1
+  const count = numBoxes + numWalls + numFloor;
   return (
     <>
-      <div className='mx-auto flex w-full flex-col flex-wrap items-center md:flex-row  lg:w-4/5'>
-
-        <div className='w-full text-center md:w-3/5'>
-          <View className='flex h-96 w-full flex-col items-center justify-center'>
-            <Suspense fallback={null}>
-              <Logo route='/blob' scale={0.6} position={[0, 0, 0]} />
-              <Common color='#ffffff' />
-            </Suspense>
-          </View>
-        </div>
-      </div>
 
       <div className="mx-auto flex w-full p-12 md:flex-row  lg:w-4/5">
         <div className='relative my-12 w-full h-full py-6 sm:w-full md:mb-40'>
           <p>Number of boxes: {numBoxes}</p>
           <View orbit={{ makeDefault: true }} className='relative h-full  sm:h-[90vh] sm:w-full'>
             <Suspense fallback={null}>
-              {/* 4 walls */}
+              {/* 4 walls and 1 floor */}
               <Block
+                index={0}
+                count={count}
                 scale={[
                   wall.thickness * wall.width,
                   wall.thickness * wall.height,
@@ -148,6 +142,8 @@ export default function Page() {
                 color={0xffffdd}
                 onSelect={onSelect} />
               <Block
+                index={1}
+                count={count}
                 scale={[
                   wall.thickness * wall.width,
                   wall.thickness * wall.height,
@@ -162,11 +158,14 @@ export default function Page() {
                 color={0xffffdd}
                 onSelect={onSelect} />
 
-              <Block scale={[
-                wall.thickness,
-                wall.thickness * wall.height,
-                wall.thickness * wall.depth
-              ]}
+              <Block
+                index={2}
+                count={count}
+                scale={[
+                  wall.thickness,
+                  wall.thickness * wall.height,
+                  wall.thickness * wall.depth
+                ]}
                 position={[
                   wall.thickness * (wall.width / 2 + .5),
                   y,
@@ -177,6 +176,8 @@ export default function Page() {
                 onSelect={onSelect}
               />
               <Block
+                index={3}
+                count={count}
                 scale={[
                   wall.thickness,
                   wall.thickness * wall.height,
@@ -192,6 +193,8 @@ export default function Page() {
                 onSelect={onSelect} />
               {/* floor */}
               <Block
+                index={4}
+                count={count}
                 scale={[
                   wall.thickness * wall.width,
                   wall.thickness,
@@ -211,6 +214,8 @@ export default function Page() {
                 const x = Math.floor((index / numberOfCols) % numberOfRows) * box.width - (wall.width * wall.thickness / 2 - box.width / 2);
                 const y = Math.floor(index / (numberOfCols * numberOfRows)) * box.height + box.height / 2;
                 return <Block
+                  index={5 + index}
+                  count={count}
                   key={index}
                   scale={[box.width, box.height, box.depth]}
                   position={[
@@ -223,9 +228,9 @@ export default function Page() {
                   onSelect={onSelect}
                 />
               })}
-              {selected && (
+              {/* {selected && (
                 <TransformControls object={selected} mode={settings.current.mode} translationSnap={gridSnap / 2} scaleSnap={gridSnap / 2} />
-              )}
+              )} */}
               <gridHelper />
               <Common color={'#66ffdd'} />
             </Suspense>
